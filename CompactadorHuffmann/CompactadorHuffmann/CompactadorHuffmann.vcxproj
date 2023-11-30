@@ -127,17 +127,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\compactador_huffman\COMPDESCOMP\COMPDESCOMP\Arvore.cpp" />
-    <ClCompile Include="..\..\compactador_huffman\COMPDESCOMP\COMPDESCOMP\COMPDESCOMP.cpp" />
-    <ClCompile Include="..\..\compactador_huffman\COMPDESCOMP\COMPDESCOMP\Lista.cpp" />
-    <ClCompile Include="..\..\compactador_huffman\COMPDESCOMP\COMPDESCOMP\NoArvore.cpp" />
-    <ClCompile Include="..\..\compactador_huffman\COMPDESCOMP\COMPDESCOMP\NoLista.cpp" />
+    <ClCompile Include="..\..\COMPDESCOMP\COMPDESCOMP\Arvore.cpp" />
+    <ClCompile Include="..\..\COMPDESCOMP\COMPDESCOMP\COMPDESCOMP.cpp" />
+    <ClCompile Include="..\..\COMPDESCOMP\COMPDESCOMP\Lista.cpp" />
+    <ClCompile Include="..\..\COMPDESCOMP\COMPDESCOMP\NoArvore.cpp" />
+    <ClCompile Include="..\..\COMPDESCOMP\COMPDESCOMP\NoLista.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\compactador_huffman\COMPDESCOMP\COMPDESCOMP\Arvore.h" />
-    <ClInclude Include="..\..\compactador_huffman\COMPDESCOMP\COMPDESCOMP\Lista.h" />
-    <ClInclude Include="..\..\compactador_huffman\COMPDESCOMP\COMPDESCOMP\NoArvore.h" />
-    <ClInclude Include="..\..\compactador_huffman\COMPDESCOMP\COMPDESCOMP\NoLista.h" />
+    <ClInclude Include="..\..\COMPDESCOMP\COMPDESCOMP\Arvore.h" />
+    <ClInclude Include="..\..\COMPDESCOMP\COMPDESCOMP\Lista.h" />
+    <ClInclude Include="..\..\COMPDESCOMP\COMPDESCOMP\NoArvore.h" />
+    <ClInclude Include="..\..\COMPDESCOMP\COMPDESCOMP\NoLista.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

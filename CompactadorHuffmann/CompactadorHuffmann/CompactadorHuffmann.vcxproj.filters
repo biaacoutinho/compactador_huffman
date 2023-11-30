@@ -15,33 +15,33 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\compactador_huffman\COMPDESCOMP\COMPDESCOMP\Arvore.cpp">
+    <ClCompile Include="..\..\COMPDESCOMP\COMPDESCOMP\Arvore.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\compactador_huffman\COMPDESCOMP\COMPDESCOMP\COMPDESCOMP.cpp">
+    <ClCompile Include="..\..\COMPDESCOMP\COMPDESCOMP\COMPDESCOMP.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\compactador_huffman\COMPDESCOMP\COMPDESCOMP\Lista.cpp">
+    <ClCompile Include="..\..\COMPDESCOMP\COMPDESCOMP\Lista.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\compactador_huffman\COMPDESCOMP\COMPDESCOMP\NoArvore.cpp">
+    <ClCompile Include="..\..\COMPDESCOMP\COMPDESCOMP\NoArvore.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\compactador_huffman\COMPDESCOMP\COMPDESCOMP\NoLista.cpp">
+    <ClCompile Include="..\..\COMPDESCOMP\COMPDESCOMP\NoLista.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\compactador_huffman\COMPDESCOMP\COMPDESCOMP\Arvore.h">
+    <ClInclude Include="..\..\COMPDESCOMP\COMPDESCOMP\Arvore.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\compactador_huffman\COMPDESCOMP\COMPDESCOMP\Lista.h">
+    <ClInclude Include="..\..\COMPDESCOMP\COMPDESCOMP\Lista.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\compactador_huffman\COMPDESCOMP\COMPDESCOMP\NoArvore.h">
+    <ClInclude Include="..\..\COMPDESCOMP\COMPDESCOMP\NoArvore.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\compactador_huffman\COMPDESCOMP\COMPDESCOMP\NoLista.h">
+    <ClInclude Include="..\..\COMPDESCOMP\COMPDESCOMP\NoLista.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
   </ItemGroup>
