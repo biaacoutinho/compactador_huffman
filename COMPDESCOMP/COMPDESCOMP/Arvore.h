@@ -1,15 +1,21 @@
 #pragma once
-typedef struct NoArvore {
-	char caracter;
-	unsigned int frequencia;
-	NoArvore* dir;
-	NoArvore* esq;
-}NoArvore;
+#include "NoArvore.h"
 
 class Arvore
 {
 	private:
-		NoArvore raiz, atual, antecessor;
+		NoArvore *raiz, *atual, *antecessor;
 	public:
-		void incluirNo(char, unsigned int);
+		Arvore();
+		Arvore(NoArvore*);
+		void IncluirRaiz(NoArvore*);
+		void IncluirAEsq(NoArvore*);
+		void IncluirADir(NoArvore*);
+		void Codificar(NoArvore*, char*);
+		NoArvore* getRaiz();
+		NoArvore* getAtual();
+		NoArvore* getAntecessor();
+		void setRaiz(NoArvore*);
+		void setAtual(NoArvore*);
+		void setAntecessor(NoArvore*);
 };
