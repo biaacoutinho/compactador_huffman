@@ -4,7 +4,7 @@ NoArvore::NoArvore()
 {
 	this->caracter = 0;
 	this->frequencia = 0;
-	this->codigo = nullptr;
+	this->codigo = 0;
 	this->dir = nullptr;
 	this->esq = nullptr;
 }
@@ -13,7 +13,7 @@ NoArvore::NoArvore(char c, unsigned int f)
 {
 	this->caracter = c;
 	this->frequencia = f;
-	this->codigo = nullptr;
+	this->codigo = 0;
 	this->dir = nullptr;
 	this->esq = nullptr;
 }
@@ -28,7 +28,7 @@ unsigned int NoArvore::getFrequencia()
 	return this->frequencia;
 }
 
-char* NoArvore::getCodigo()
+unsigned int NoArvore::getCodigo()
 {
 	return this->codigo;
 }
@@ -63,7 +63,7 @@ void NoArvore::setDir(NoArvore* n)
 	this->dir = n;
 }
 
-void NoArvore::setCodigo(char* c)
+void NoArvore::setCodigo(unsigned int c)
 {
 	this->codigo = c;
 }

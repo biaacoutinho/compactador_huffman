@@ -11,8 +11,8 @@ class Arvore
 		void IncluirRaiz(NoArvore*);
 		void IncluirAEsq(NoArvore*);
 		void IncluirADir(NoArvore*);
-		void Codificar(NoArvore*, char*);
-		char* BuscarCodigo(NoArvore*, char);
+		void Codificar(NoArvore*, unsigned int);
+		unsigned int BuscarCodigo(NoArvore*, unsigned int);
 		NoArvore* getRaiz();
 		NoArvore* getAtual();
 		NoArvore* getAntecessor();

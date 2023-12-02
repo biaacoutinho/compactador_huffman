@@ -38,11 +38,11 @@ void Arvore::IncluirADir(NoArvore* dado)
     }
 }
 
-void Arvore::Codificar(NoArvore* no, char* codigo)
+void Arvore::Codificar(NoArvore* no, unsigned int codigo)
 {
     if (no != nullptr)
     {
-        char a[11];
+        /*char a[11];
         strcpy_s(a, codigo);
         strcat_s(a, 11, "0");
         Codificar(no->getEsq(), a);
@@ -50,23 +50,27 @@ void Arvore::Codificar(NoArvore* no, char* codigo)
         char b[11];
         strcpy_s(b, codigo);
         strcat_s(b, 11, "1");
-        Codificar(no->getDir(), b);
+        Codificar(no->getDir(), b);*/
+
+        Codificar(no->getEsq(), (codigo << 1) | 0);
+        no->setCodigo((codigo << 1) | 0);
+        Codificar(no->getDir(), (codigo << 1) | 1);
     }
 }
 
-char* Arvore::BuscarCodigo(NoArvore* no, char procurado)
+unsigned int Arvore::BuscarCodigo(NoArvore* no, unsigned int procurado)
 {
     if (no == nullptr)
-        return nullptr;
+        return 0;
 
     if (procurado == no->getCaracter())
         return no->getCodigo();
-
-    char* codigoEsq = BuscarCodigo(no->getEsq(), procurado);
-    if (codigoEsq != nullptr)
+    
+    unsigned int codigoEsq = BuscarCodigo(no->getEsq(), procurado);
+    if (codigoEsq != 0)
         return codigoEsq;
 
-    char* codigoDir = BuscarCodigo(no->getDir(), procurado);
+    unsigned int codigoDir = BuscarCodigo(no->getDir(), procurado);
     return codigoDir;
 }
 
