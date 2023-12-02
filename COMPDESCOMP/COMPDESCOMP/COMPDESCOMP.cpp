@@ -75,16 +75,37 @@ int main()
     Arvore* arvore = CriarArvore();
     char codigo[11];
     strcpy_s(codigo, "");
-    arvore->Codificar(arvore->getRaiz(), 0);
+    arvore->Codificar(arvore->getRaiz(), 0, 0);
 
-    //ofstream arq("B:\\ESCOLA\\MALIGNO\\compactador_huffman/compactado.dat", ios::binary);
-    ofstream arq("D:\\ARMAG/compactado.dat", ios::binary);
+    ofstream arq("B:\\ESCOLA\\MALIGNO\\compactador_huffman/compactado.dat", ios::binary);
+    //ofstream arq("D:\\ARMAG/compactado.dat", ios::binary);
     ifstream arqLeitura(nomeArquivo, ios::binary);
 
+    char byte;
+    int bitsEscritos = 0;
     for (char c; arqLeitura.get(c); )
     {
         unsigned int codigo = arvore->BuscarCodigo(arvore->getRaiz(), c);
-        arq.write(codigo, sizeof(codigo));
+        int tamCodigo = arvore->getAtual()->getTamanho();
+
+        for (int i = 0; i < tamCodigo; i++)
+        {
+            byte = (byte << 1) | (bit - '0');
+        }
+
+        bitsEscritos++;
+
+        if (bitsEscritos == 8)
+        {
+            arq.write(codigo, 1);
+            bitsEscritos = 0;
+        }
+    }
+
+    if (bitsEscritos > 0) // precisa completar os bits para escrever
+    {
+        codigo <<= (8 - bitsEscritos);
+        arq.write(codigo, 1);
     }
     
     arqLeitura.close();
