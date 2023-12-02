@@ -7,8 +7,8 @@
 
 using namespace std;
 
+Arvore* arvore;
 Lista* filaPrioridade;
-
 char* nomeArquivo = new char[50];
 
 static void CriarFilaDePrioridade()
@@ -55,6 +55,13 @@ static Arvore* CriarArvore()
     return new Arvore(filaPrioridade->Remover());
 }
 
+static void Encerrar()
+{
+    delete arvore;
+    delete filaPrioridade;
+    delete nomeArquivo;
+}
+
 int main()
 {
     cout << "Digite o caminho do arquivo que deseja compactar: ";
@@ -72,7 +79,7 @@ int main()
 
     cout << filaPrioridade->Tamanho() << '\n';
 
-    Arvore* arvore = CriarArvore();
+    arvore = CriarArvore();
     char codigo[11];
     strcpy_s(codigo, "");
     arvore->Codificar(arvore->getRaiz(), 0, 0);
@@ -81,33 +88,51 @@ int main()
     //ofstream arq("D:\\ARMAG/compactado.dat", ios::binary);
     ifstream arqLeitura(nomeArquivo, ios::binary);
 
-    char byte;
+    char byte = 0;
     int bitsEscritos = 0;
     for (char c; arqLeitura.get(c); )
     {
         unsigned int codigo = arvore->BuscarCodigo(arvore->getRaiz(), c);
         int tamCodigo = arvore->getAtual()->getTamanho();
 
-        for (int i = 0; i < tamCodigo; i++)
+        if (tamCodigo < (8 - bitsEscritos)) //verifica se tem espaço no byte para o codigo inteiro
         {
-            byte = (byte << 1) | (bit - '0');
+            byte <<= tamCodigo;
+            byte |= codigo;
+            bitsEscritos += tamCodigo;
+            if (bitsEscritos == 8)
+                arq.write(&byte, 1);
+        }
+        else
+        {
+            byte <<= (8 - bitsEscritos); //disponibiliza os bits restantes
+            int bitsNGravados = (tamCodigo - (8 - bitsEscritos));
+            unsigned int codAux = codigo >> bitsNGravados; //parte o codigo em dois,
+            //a parte que cabe no bit atual(codAux),
+            //e a parte que nao cabe
+            byte |= codAux; // armazena a parte que cabe no byte atual
+
+            arq.write(&byte, 1);//escreve o byte prontinho
+
+            byte = 0; //zera o byteAtual denovo (00000000)
+
+            unsigned __int8 mascara = ~(0b11111111 << bitsNGravados); //cria uma mascara para conseguir gravar
+            //o numero certo de bits do codigo
+            byte = codigo & mascara; //grava os bits restantes
+
+            bitsEscritos = bitsNGravados; //atualiza o numero de bits gravados
         }
 
-        bitsEscritos++;
+        char bitsNaoUsados = 8 - bitsEscritos;
 
-        if (bitsEscritos == 8)
-        {
-            arq.write(codigo, 1);
-            bitsEscritos = 0;
-        }
+        arq.seekp(0, ios::beg); //ajusta o ponteiro do arquivo pra primeira posicao
+        arq.write(&bitsNaoUsados, 1); //escreve o numero de bits a ser desconsiderado
+
+        //Escrever a arvore no arquivo
     }
 
-    if (bitsEscritos > 0) // precisa completar os bits para escrever
-    {
-        codigo <<= (8 - bitsEscritos);
-        arq.write(codigo, 1);
-    }
-    
     arqLeitura.close();
     arq.close();
+
+    Encerrar(); //escrever destrutores nas classes, é preciso liberar a memoria de todos os ponteiros
 }
