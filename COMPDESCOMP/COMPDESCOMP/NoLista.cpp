@@ -2,7 +2,7 @@
 
 NoLista::NoLista()
 {
-	this->dado;
+	this->dado = nullptr;
 	this->ant = nullptr;
 	this->prox = nullptr;
 }

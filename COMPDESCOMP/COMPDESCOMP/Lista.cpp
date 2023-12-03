@@ -6,6 +6,7 @@ Lista::Lista()
 	this->atual = nullptr;
 	this->primeiro = nullptr;
 	this->ultimo = nullptr;
+    this->tamanho = 0;
 }
 
 void Lista::Inserir(NoLista* dado) 

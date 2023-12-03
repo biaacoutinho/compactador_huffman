@@ -1,5 +1,6 @@
 #pragma once
 #include "NoArvore.h"
+#include <iostream>
 
 class Arvore
 {
@@ -12,7 +13,7 @@ class Arvore
 		void IncluirAEsq(NoArvore*);
 		void IncluirADir(NoArvore*);
 		void Codificar(NoArvore*, unsigned int, unsigned int);
-		unsigned int BuscarCodigo(NoArvore*, unsigned int);
+		unsigned int BuscarCodigo(NoArvore*, char);
 		NoArvore* getRaiz();
 		NoArvore* getAtual();
 		NoArvore* getAntecessor();

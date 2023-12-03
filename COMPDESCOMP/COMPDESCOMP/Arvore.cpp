@@ -38,7 +38,7 @@ void Arvore::IncluirADir(NoArvore* dado)
     }
 }
 
-void Arvore::Codificar(NoArvore* no, unsigned int codigo, unsigned int tamanho)
+void Arvore::Codificar(NoArvore* no, unsigned int codigo, unsigned int tamanho) //raiz, 0, 0
 {
     if (no != nullptr)
     {
@@ -53,12 +53,13 @@ void Arvore::Codificar(NoArvore* no, unsigned int codigo, unsigned int tamanho)
         Codificar(no->getDir(), b);*/
 
         Codificar(no->getEsq(), (codigo << 1) | 0, tamanho + 1);
-        no->setCodigo((codigo << 1) | 0);
+        no->setCodigo(codigo);
+        no->setTamanho(tamanho);
         Codificar(no->getDir(), (codigo << 1) | 1, tamanho + 1);
     }
 }
 
-unsigned int Arvore::BuscarCodigo(NoArvore* no, unsigned int procurado)
+unsigned int Arvore::BuscarCodigo(NoArvore* no, char procurado)
 {
     if (no == nullptr)
         return 0;

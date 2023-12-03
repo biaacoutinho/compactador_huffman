@@ -2,12 +2,14 @@
 #include <string.h>
 #include <fstream>
 #include <string.h>
+#include <filesystem>
 #include "Arvore.h"
 #include "Lista.h"
 
 using namespace std;
 
 Arvore* arvore;
+Arvore* novaArvore;
 Lista* filaPrioridade;
 char* nomeArquivo = new char[50];
 
@@ -55,36 +57,60 @@ static Arvore* CriarArvore()
     return new Arvore(filaPrioridade->Remover());
 }
 
-static void Encerrar()
+static void EscreverArvore(NoArvore* no, ofstream& arq)
 {
-    delete arvore;
-    delete filaPrioridade;
-    delete nomeArquivo;
+    char EhFolha;
+    if (no != nullptr)
+    {
+        EhFolha = 0;
+        arq.write(&EhFolha, 1);
+        const char a = no->getCaracter();
+        arq.write(&a, 1);
+        EscreverArvore(no->getEsq(), arq);
+        EscreverArvore(no->getDir(), arq);
+    }
+    else
+    {
+        EhFolha = 1;
+        arq.write(&EhFolha, 1);
+    }
 }
 
-int main()
+static NoArvore* LerArvore(NoArvore* no, ifstream& arq)
+{
+    char c;
+    arq.get(c); //0 se tiver alguma coisa, 1 se nao tiver nada
+    if (c == 0)
+    {
+        arq.get(c);
+        no = new NoArvore(c, 0);
+        no->setEsq(LerArvore(no->getEsq(), arq));
+        no->setDir(LerArvore(no->getDir(), arq));
+    }
+    return no;
+}
+
+static void MostrarArvore(NoArvore* raiz) //metodo pra teste, não será usado. Provavelmente será apagado
+{
+    if (raiz != nullptr)
+    {
+        MostrarArvore(raiz->getEsq());
+        cout << raiz->getCaracter() << endl;
+        MostrarArvore(raiz->getDir());
+    }
+}
+
+static void Compilar()
 {
     cout << "Digite o caminho do arquivo que deseja compactar: ";
     cin >> nomeArquivo;
 
     CriarFilaDePrioridade();
 
-    for (filaPrioridade->setAtual(filaPrioridade->getPrimeiro());
-        filaPrioridade->getAtual() != nullptr;
-        filaPrioridade->setAtual(filaPrioridade->getAtual()->getProx()))
-    {
-        NoArvore a = *filaPrioridade->getAtual()->getDado();
-        cout << a.getCaracter() << ',' << a.getFrequencia() << '\n';
-    }
-
-    cout << filaPrioridade->Tamanho() << '\n';
-
     arvore = CriarArvore();
-    char codigo[11];
-    strcpy_s(codigo, "");
     arvore->Codificar(arvore->getRaiz(), 0, 0);
 
-    ofstream arq("B:\\ESCOLA\\MALIGNO\\compactador_huffman/compactado.dat", ios::binary);
+    ofstream arq("C:\\Users\\Hugo\\Documents\\Cotuca\\TPOO/compactado.dat", ios::binary);
     //ofstream arq("D:\\ARMAG/compactado.dat", ios::binary);
     ifstream arqLeitura(nomeArquivo, ios::binary);
 
@@ -122,17 +148,68 @@ int main()
 
             bitsEscritos = bitsNGravados; //atualiza o numero de bits gravados
         }
-
-        char bitsNaoUsados = 8 - bitsEscritos;
-
-        arq.seekp(0, ios::beg); //ajusta o ponteiro do arquivo pra primeira posicao
-        arq.write(&bitsNaoUsados, 1); //escreve o numero de bits a ser desconsiderado
-
-        //Escrever a arvore no arquivo
     }
+
+    char bitsNaoUsados = 8 - bitsEscritos;
+
+    arq.seekp(0, ios::beg); //ajusta o ponteiro do arquivo pra primeira posicao
+    arq.write(&bitsNaoUsados, 1); //escreve o numero de bits a ser desconsiderado
+
+    EscreverArvore(arvore->getRaiz(), arq); //Escrever a arvore no arquivo
 
     arqLeitura.close();
     arq.close();
+}
 
-    Encerrar(); //escrever destrutores nas classes, é preciso liberar a memoria de todos os ponteiros
+static void Descompilar()
+{
+    cout << "Não tá pronto kkkkkk! somente chore com seu arquivo compactado que vc nao vai poder descompactar" << endl;
+    system("pause");
+}
+
+int main()
+{
+    char opcao;
+    do
+    {
+        system("cls || clear");
+        cout << "Compactador e Descompactador mania!!! Venha compactar seus arquivos aqui <3" << endl;
+        cout << "---------------------------------------------------------------------------" << endl;
+        cout << "1 - Compactar arquivo" << endl;
+        cout << "2 - Descompactar arquivo" << endl;
+        cout << "0 - Sair do programa" << endl;
+        cout << "\nSelecione a opção desejada: ";
+        cin >> opcao;
+
+        switch (opcao)
+        {
+            case '1': Compilar(); break;
+            case '2': Descompilar(); break;
+            case '0': break;
+            default:
+            {
+                break;
+            } 
+        }
+    } 
+    while (opcao != 0);
+
+    ////////// TESTE PRA VER SE TA COMPACTANDO BONITINHO /////////////////////////////
+    //testado e aprovado
+    // 
+    //"B:\\ESCOLA\\MALIGNO\\compactador_huffman/compactado.dat"
+    /*
+    ifstream teste("C:\\Users\\Hugo\\Documents\\Cotuca\\TPOO/compactado.dat", ios::binary);
+
+    char c;
+    teste.get(c); //pega o primeiro byte, deveria ser o numero de bites para ignorar no ultimo byte
+    novaArvore = new Arvore(new NoArvore());
+    novaArvore->setRaiz(LerArvore(novaArvore->getRaiz(), teste));
+    teste.close();
+
+    MostrarArvore(arvore->getRaiz());
+
+    cout << "-------------------" << endl;
+
+    MostrarArvore(novaArvore->getRaiz());*/
 }
