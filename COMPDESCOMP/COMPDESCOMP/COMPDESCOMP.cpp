@@ -11,36 +11,42 @@ using namespace std;
 Arvore* arvore;
 Arvore* novaArvore;
 Lista* filaPrioridade;
+char abriuArquivo = 0;
 char* nomeArquivo = new char[50];
 
 static void CriarFilaDePrioridade()
 {
     ifstream arq(nomeArquivo, ios::binary);
-    filaPrioridade = new Lista();
 
-    //Separa caracteres e define suas frequencias
-    for (char c; arq.get(c); )
+    if (arq.is_open())
     {
-        char cRepetido = 0;
-        for (filaPrioridade->setAtual(filaPrioridade->getPrimeiro());
-            filaPrioridade->getAtual() != nullptr;
-            filaPrioridade->setAtual(filaPrioridade->getAtual()->getProx()))
+        abriuArquivo = 1;
+        filaPrioridade = new Lista();
+
+        //Separa caracteres e define suas frequencias
+        for (char c; arq.get(c); )
         {
-            if (c == filaPrioridade->getAtual()->getDado()->getCaracter())
+            char cRepetido = 0;
+            for (filaPrioridade->setAtual(filaPrioridade->getPrimeiro());
+                filaPrioridade->getAtual() != nullptr;
+                filaPrioridade->setAtual(filaPrioridade->getAtual()->getProx()))
             {
-                filaPrioridade->getAtual()->getDado()->setFrequencia(filaPrioridade->getAtual()->getDado()->getFrequencia() + 1);
-                cRepetido = 1;
-                break;
+                if (c == filaPrioridade->getAtual()->getDado()->getCaracter())
+                {
+                    filaPrioridade->getAtual()->getDado()->setFrequencia(filaPrioridade->getAtual()->getDado()->getFrequencia() + 1);
+                    cRepetido = 1;
+                    break;
+                }
+            }
+            if (!cRepetido)
+            {
+                filaPrioridade->Inserir(new NoLista(new NoArvore(c, 1)));
             }
         }
-        if (!cRepetido)
-        {
-            filaPrioridade->Inserir(new NoLista(new NoArvore(c, 1)));
-        }
+        //Ordenar lista
+        filaPrioridade->Ordenar();
+        arq.close();
     }
-    //Ordenar lista
-    filaPrioridade->Ordenar();
-    arq.close();
 }
 
 static Arvore* CriarArvore()
@@ -107,58 +113,67 @@ static void Compilar()
 
     CriarFilaDePrioridade();
 
-    arvore = CriarArvore();
-    arvore->Codificar(arvore->getRaiz(), 0, 0);
 
-    ofstream arq("C:\\Users\\Hugo\\Documents\\Cotuca\\TPOO/compactado.dat", ios::binary);
-    //ofstream arq("D:\\ARMAG/compactado.dat", ios::binary);
-    ifstream arqLeitura(nomeArquivo, ios::binary);
-
-    char byte = 0;
-    int bitsEscritos = 0;
-    for (char c; arqLeitura.get(c); )
+    if (abriuArquivo)
     {
-        unsigned int codigo = arvore->BuscarCodigo(arvore->getRaiz(), c);
-        int tamCodigo = arvore->getAtual()->getTamanho();
+        arvore = CriarArvore();
+        arvore->Codificar(arvore->getRaiz(), 0, 0);
 
-        if (tamCodigo < (8 - bitsEscritos)) //verifica se tem espaço no byte para o codigo inteiro
+        ofstream arq("B:\\ESCOLA\\MALIGNO\\compactador_huffman/compactado.dat", ios::binary);
+        //ofstream arq("D:\\ARMAG/compactado.dat", ios::binary);
+        ifstream arqLeitura(nomeArquivo, ios::binary);
+
+        char byte = 0;
+        int bitsEscritos = 0;
+        for (char c; arqLeitura.get(c); )
         {
-            byte <<= tamCodigo;
-            byte |= codigo;
-            bitsEscritos += tamCodigo;
-            if (bitsEscritos == 8)
-                arq.write(&byte, 1);
+            unsigned int codigo = arvore->BuscarCodigo(arvore->getRaiz(), c);
+            int tamCodigo = arvore->getAtual()->getTamanho();
+
+            if (tamCodigo < (8 - bitsEscritos)) //verifica se tem espaço no byte para o codigo inteiro
+            {
+                byte <<= tamCodigo;
+                byte |= codigo;
+                bitsEscritos += tamCodigo;
+                if (bitsEscritos == 8)
+                    arq.write(&byte, 1);
+            }
+            else
+            {
+                byte <<= (8 - bitsEscritos); //disponibiliza os bits restantes
+                int bitsNGravados = (tamCodigo - (8 - bitsEscritos));
+                unsigned int codAux = codigo >> bitsNGravados; //parte o codigo em dois,
+                //a parte que cabe no bit atual(codAux),
+                //e a parte que nao cabe
+                byte |= codAux; // armazena a parte que cabe no byte atual
+
+                arq.write(&byte, 1);//escreve o byte prontinho
+
+                byte = 0; //zera o byteAtual denovo (00000000)
+
+                unsigned __int8 mascara = ~(0b11111111 << bitsNGravados); //cria uma mascara para conseguir gravar
+                //o numero certo de bits do codigo
+                byte = codigo & mascara; //grava os bits restantes
+
+                bitsEscritos = bitsNGravados; //atualiza o numero de bits gravados
+            }
         }
-        else
-        {
-            byte <<= (8 - bitsEscritos); //disponibiliza os bits restantes
-            int bitsNGravados = (tamCodigo - (8 - bitsEscritos));
-            unsigned int codAux = codigo >> bitsNGravados; //parte o codigo em dois,
-            //a parte que cabe no bit atual(codAux),
-            //e a parte que nao cabe
-            byte |= codAux; // armazena a parte que cabe no byte atual
 
-            arq.write(&byte, 1);//escreve o byte prontinho
+        char bitsNaoUsados = 8 - bitsEscritos;
 
-            byte = 0; //zera o byteAtual denovo (00000000)
+        arq.seekp(0, ios::beg); //ajusta o ponteiro do arquivo pra primeira posicao
+        arq.write(&bitsNaoUsados, 1); //escreve o numero de bits a ser desconsiderado
 
-            unsigned __int8 mascara = ~(0b11111111 << bitsNGravados); //cria uma mascara para conseguir gravar
-            //o numero certo de bits do codigo
-            byte = codigo & mascara; //grava os bits restantes
+        EscreverArvore(arvore->getRaiz(), arq); //Escrever a arvore no arquivo
 
-            bitsEscritos = bitsNGravados; //atualiza o numero de bits gravados
-        }
+        arqLeitura.close();
+        arq.close();
     }
-
-    char bitsNaoUsados = 8 - bitsEscritos;
-
-    arq.seekp(0, ios::beg); //ajusta o ponteiro do arquivo pra primeira posicao
-    arq.write(&bitsNaoUsados, 1); //escreve o numero de bits a ser desconsiderado
-
-    EscreverArvore(arvore->getRaiz(), arq); //Escrever a arvore no arquivo
-
-    arqLeitura.close();
-    arq.close();
+    else 
+    {
+        cout << "\nErro ao abrir arquivo! \n";
+        system("pause");
+    }
 }
 
 static void Descompilar()

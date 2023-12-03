@@ -1,6 +1,1 @@
-﻿  Arvore.cpp
-  COMPDESCOMP.cpp
-C:\Users\URICH\Documents\compactador_huffman\COMPDESCOMP\COMPDESCOMP\COMPDESCOMP.cpp(86,22): error C2440: 'inicializando': não é possível converter de 'unsigned int' para 'char *'
-C:\Users\URICH\Documents\compactador_huffman\COMPDESCOMP\COMPDESCOMP\COMPDESCOMP.cpp(86,22): message : Conversão de tipo integral para tipo de ponteiro requer reinterpret_cast, conversão C-style ou conversão function-style entre parênteses
-  NoLista.cpp
-  Gerando Código...
+﻿  CompactadorHuffmann.vcxproj -> B:\ESCOLA\MALIGNO\compactador_huffman\CompactadorHuffmann\x64\Debug\CompactadorHuffmann.exe
