@@ -12,7 +12,7 @@ Arvore* arvore;
 Arvore* novaArvore;
 Lista* filaPrioridade;
 char abriuArquivo = 0;
-char* nomeArquivo = new char[50];
+char* nomeArquivo = new char[200];
 
 static void CriarFilaDePrioridade()
 {
@@ -43,8 +43,6 @@ static void CriarFilaDePrioridade()
                 filaPrioridade->Inserir(new NoLista(new NoArvore(c, 1)));
             }
         }
-        //Ordenar lista
-        filaPrioridade->Ordenar();
         arq.close();
     }
 }
@@ -63,26 +61,49 @@ static Arvore* CriarArvore()
     return new Arvore(filaPrioridade->Remover());
 }
 
-static void EscreverArvore(NoArvore* no, ofstream& arq)
+static void EscreverArvore(NoArvore* no, ofstream& arq, char *byte, int *bits)
 {
-    char EhFolha;
-    if (no != nullptr)
+    if (no->getEsq() == nullptr && no->getDir() == nullptr)
     {
-        EhFolha = 0;
-        arq.write(&EhFolha, 1);
+        *byte <<= 1;
+        *byte |= 0b1;
+        (*bits)++;
         const char a = no->getCaracter();
-        arq.write(&a, 1);
-        EscreverArvore(no->getEsq(), arq);
-        EscreverArvore(no->getDir(), arq);
+
+        *byte <<= (8 - *bits); //disponibiliza os bits restantes
+        int bitsNGravados = (8 - (8 - *bits));
+        unsigned int codAux = a >> bitsNGravados; //parte o codigo em dois,
+        //a parte que cabe no bit atual(codAux),
+        //e a parte que nao cabe
+        *byte |= codAux; // armazena a parte que cabe no byte atual
+
+        arq.write(byte, 1);//escreve o byte prontinho
+
+        *byte = 0b0; //zera o byteAtual denovo (00000000)
+
+        unsigned __int8 mascara = ~(0b11111111 << bitsNGravados); //cria uma mascara para conseguir gravar
+        //o numero certo de bits do codigo
+        *byte = a & mascara; //grava os bits restantes
+
+        *bits = bitsNGravados; //atualiza o numero de bits gravados
+
+        EscreverArvore(no->getEsq(), arq, byte, bits);
+        EscreverArvore(no->getDir(), arq, byte, bits);
     }
     else
     {
-        EhFolha = 1;
-        arq.write(&EhFolha, 1);
+        *byte <<= 1;
+        *byte |= 0;
+        (*bits)++;
+    }
+
+    if (*bits == 8)
+    {
+        arq.write(byte, 1);
     }
 }
 
-static NoArvore* LerArvore(NoArvore* no, ifstream& arq)
+static NoArvore* LerArvore(NoArvore* no, ifstream& arq) //alterar para ler um unico bit
 {
     char c;
     arq.get(c); //0 se tiver alguma coisa, 1 se nao tiver nada
@@ -101,25 +122,26 @@ static void MostrarArvore(NoArvore* raiz) //metodo pra teste, não será usado. Pr
     if (raiz != nullptr)
     {
         MostrarArvore(raiz->getEsq());
-        cout << raiz->getCaracter() << endl;
+        cout << raiz->getCaracter() << " : " << raiz->getCodigo() << " , " << raiz->getTamanho() << endl;
         MostrarArvore(raiz->getDir());
     }
 }
 
-static void Compilar()
+static void Compactar()
 {
     cout << "Digite o caminho do arquivo que deseja compactar: ";
     cin >> nomeArquivo;
 
     CriarFilaDePrioridade();
 
-
-    if (abriuArquivo)
+    if (abriuArquivo) //
     {
         arvore = CriarArvore();
         arvore->Codificar(arvore->getRaiz(), 0, 0);
 
-        ofstream arq("B:\\ESCOLA\\MALIGNO\\compactador_huffman/compactado.dat", ios::binary);
+        MostrarArvore(arvore->getRaiz());
+
+        ofstream arq("C:\\Users\\u22121\\Documents\\GitHub\\compactador_huffman/compactado.dat", ios::binary);
         //ofstream arq("D:\\ARMAG/compactado.dat", ios::binary);
         ifstream arqLeitura(nomeArquivo, ios::binary);
 
@@ -128,15 +150,18 @@ static void Compilar()
         for (char c; arqLeitura.get(c); )
         {
             unsigned int codigo = arvore->BuscarCodigo(arvore->getRaiz(), c);
+            //verificar se é infinity
             int tamCodigo = arvore->getAtual()->getTamanho();
 
-            if (tamCodigo < (8 - bitsEscritos)) //verifica se tem espaço no byte para o codigo inteiro
+            if (tamCodigo <= (8 - bitsEscritos)) //verifica se tem espaço no byte para o codigo inteiro
             {
                 byte <<= tamCodigo;
                 byte |= codigo;
                 bitsEscritos += tamCodigo;
                 if (bitsEscritos == 8)
+                {
                     arq.write(&byte, 1);
+                }
             }
             else
             {
@@ -149,7 +174,7 @@ static void Compilar()
 
                 arq.write(&byte, 1);//escreve o byte prontinho
 
-                byte = 0; //zera o byteAtual denovo (00000000)
+                byte = 0b0; //zera o byteAtual denovo (00000000)
 
                 unsigned __int8 mascara = ~(0b11111111 << bitsNGravados); //cria uma mascara para conseguir gravar
                 //o numero certo de bits do codigo
@@ -164,10 +189,12 @@ static void Compilar()
         arq.seekp(0, ios::beg); //ajusta o ponteiro do arquivo pra primeira posicao
         arq.write(&bitsNaoUsados, 1); //escreve o numero de bits a ser desconsiderado
 
-        EscreverArvore(arvore->getRaiz(), arq); //Escrever a arvore no arquivo
+        EscreverArvore(arvore->getRaiz(), arq, new char(), 0); //Escrever a arvore no arquivo
 
         arqLeitura.close();
         arq.close();
+
+        system("pause");
     }
     else 
     {
@@ -176,7 +203,7 @@ static void Compilar()
     }
 }
 
-static void Descompilar()
+static void Descompactar()
 {
     cout << "Não tá pronto kkkkkk! somente chore com seu arquivo compactado que vc nao vai poder descompactar" << endl;
     system("pause");
@@ -198,8 +225,8 @@ int main()
 
         switch (opcao)
         {
-            case '1': Compilar(); break;
-            case '2': Descompilar(); break;
+            case '1': Compactar(); break;
+            case '2': Descompactar(); break;
             case '0': break;
             default:
             {

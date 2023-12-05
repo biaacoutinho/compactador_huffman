@@ -23,6 +23,7 @@ void Lista::Inserir(NoLista* dado)
         this->ultimo = dado;
     }
     tamanho++;
+    Ordenar();
 }
 
 NoArvore* Lista::Remover()
