@@ -172,7 +172,6 @@ int main()
     char opcao;
     do
     {
-        system("cls || clear");
         cout << "Compactador e Descompactador mania!!! Venha compactar seus arquivos aqui <3" << endl;
         cout << "---------------------------------------------------------------------------" << endl;
         cout << "1 - Compactar arquivo" << endl;
@@ -181,18 +180,13 @@ int main()
         cout << "\nSelecione a opção desejada: ";
         cin >> opcao;
 
-        switch (opcao)
-        {
-            case '1': Compilar(); break;
-            case '2': Descompilar(); break;
-            case '0': break;
-            default:
-            {
-                break;
-            } 
-        }
-    } 
-    while (opcao != 0);
+        if (opcao == '1')
+            Compilar();
+        if (opcao == '2')
+            Descompilar();
+
+        cout << "\n" << endl;
+    } while (opcao != '0');
 
     ////////// TESTE PRA VER SE TA COMPACTANDO BONITINHO /////////////////////////////
     //testado e aprovado
@@ -212,4 +206,5 @@ int main()
     cout << "-------------------" << endl;
 
     MostrarArvore(novaArvore->getRaiz());*/
+
 }
