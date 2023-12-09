@@ -73,6 +73,7 @@ unsigned int Arvore::BuscarCodigo(NoArvore* no, char procurado)
     unsigned int codigoEsq = BuscarCodigo(no->getEsq(), procurado);
     if (codigoEsq != INT16_MAX)
         return codigoEsq;
+
     unsigned int codigoDir = BuscarCodigo(no->getDir(), procurado);
     return codigoDir;
 }
