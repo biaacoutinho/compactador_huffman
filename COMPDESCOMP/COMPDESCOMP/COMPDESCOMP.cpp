@@ -105,19 +105,37 @@ static void EscreverArvore(NoArvore* no, ofstream& arq, char *byte, int *bits)
 
 static NoArvore* LerArvore(NoArvore* no, ifstream& arq) //alterar para ler um unico bit
 {
-    char c;
-    arq.get(c); //0 se tiver alguma coisa, 1 se nao tiver nada
-    if (c == 0)
-    {
-        arq.get(c);
-        no = new NoArvore(c, 0);
-        no->setEsq(LerArvore(no->getEsq(), arq));
-        no->setDir(LerArvore(no->getDir(), arq));
-    }
-    return no;
+    char bit = 0;
+
+	if (*bitsLidos == 8)
+	{
+		arq.get(*byte);
+		*bitsLidos = 0;
+	}
+
+	bit = *byte;
+	bit <<= *bitsLidos;
+	bit >>= 7;
+	(*bitsLidos)++;
+	if (bit) //se o bit lido for 1
+	{
+		char c = 0;
+		c = (*byte << *bitsLidos) | 0; //primeira parte do char
+		arq.get(*byte); //inicia um novo byte
+		c |= (*byte >> (8 - *bitsLidos));
+		no = new NoArvore(c, 0);
+		return no;
+	}
+	else //se o bit lido for 0
+	{
+		no = new NoArvore('\0', 0);
+		no->setEsq(LerArvore(no->getEsq(), arq, byte, bitsLidos));
+		no->setDir(LerArvore(no->getDir(), arq, byte, bitsLidos));
+		return no;
+	}
 }
 
-static void MostrarArvore(NoArvore* raiz) //metodo pra teste, não será usado. Provavelmente será apagado
+static void MostrarArvore(NoArvore* raiz) //metodo pra teste, nÃ£o serÃ¡ usado. Provavelmente serÃ¡ apagado
 {
     if (raiz != nullptr)
     {
@@ -150,10 +168,10 @@ static void Compactar()
         for (char c; arqLeitura.get(c); )
         {
             unsigned int codigo = arvore->BuscarCodigo(arvore->getRaiz(), c);
-            //verificar se é infinity
+            //verificar se Ã© infinity
             int tamCodigo = arvore->getAtual()->getTamanho();
 
-            if (tamCodigo <= (8 - bitsEscritos)) //verifica se tem espaço no byte para o codigo inteiro
+            if (tamCodigo <= (8 - bitsEscritos)) //verifica se tem espaÃ§o no byte para o codigo inteiro
             {
                 byte <<= tamCodigo;
                 byte |= codigo;
@@ -205,7 +223,7 @@ static void Compactar()
 
 static void Descompactar()
 {
-    cout << "Não tá pronto kkkkkk! somente chore com seu arquivo compactado que vc nao vai poder descompactar" << endl;
+    cout << "NÃ£o tÃ¡ pronto kkkkkk! somente chore com seu arquivo compactado que vc nao vai poder descompactar" << endl;
     system("pause");
 }
 
@@ -220,7 +238,7 @@ int main()
         cout << "1 - Compactar arquivo" << endl;
         cout << "2 - Descompactar arquivo" << endl;
         cout << "0 - Sair do programa" << endl;
-        cout << "\nSelecione a opção desejada: ";
+        cout << "\nSelecione a opÃ§Ã£o desejada: ";
         cin >> opcao;
 
         switch (opcao)
