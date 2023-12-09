@@ -62,7 +62,7 @@ void Arvore::Codificar(NoArvore* no, unsigned int codigo, unsigned int tamanho) 
 unsigned int Arvore::BuscarCodigo(NoArvore* no, char procurado)
 {
     if (no == nullptr)
-        return 0;
+        return INT16_MAX;
 
     if (procurado == no->getCaracter())
     {
@@ -71,9 +71,8 @@ unsigned int Arvore::BuscarCodigo(NoArvore* no, char procurado)
     }
     
     unsigned int codigoEsq = BuscarCodigo(no->getEsq(), procurado);
-    if (codigoEsq != 0)
+    if (codigoEsq != INT16_MAX)
         return codigoEsq;
-
     unsigned int codigoDir = BuscarCodigo(no->getDir(), procurado);
     return codigoDir;
 }
