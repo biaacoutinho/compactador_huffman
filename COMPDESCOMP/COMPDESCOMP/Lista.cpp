@@ -11,19 +11,50 @@ Lista::Lista()
 
 void Lista::Inserir(NoLista* dado) 
 {
-	if (this->primeiro == nullptr)
-	{
-		this->primeiro = dado;
-        this->ultimo = primeiro;
-	}
+    if (this->primeiro == nullptr)
+    {
+        ultimo = dado;
+        primeiro = dado;
+        atual = primeiro;
+        tamanho++;
+    }
     else
     {
-        this->ultimo->setProx(dado);
-        dado->setAnt(this->ultimo);
-        this->ultimo = dado;
+        if (dado->getDado()->getFrequencia() <= primeiro->getDado()->getFrequencia())
+        {
+            dado->setProx(primeiro);
+            primeiro->setAnt(dado);
+            primeiro = dado;
+            atual = primeiro;
+            tamanho++;
+        }
+        else
+            if (dado->getDado()->getFrequencia() >= ultimo->getDado()->getFrequencia())
+            {
+                ultimo->setProx(dado);
+                dado->setAnt(ultimo);
+                ultimo = dado;
+                atual = ultimo;
+                tamanho++;
+            }
+            else
+            {
+                atual = primeiro;
+                while (atual != nullptr)
+                {
+                    if (atual->getDado()->getFrequencia() >= dado->getDado()->getFrequencia())
+                    {
+                        dado->setAnt(atual->getAnt());
+                        dado->setProx(atual);
+                        atual->getAnt()->setProx(dado);
+                        atual->setAnt(dado);
+                        tamanho++;
+                        return;
+                    }
+                    atual = atual->getProx();
+                }
+            }
     }
-    tamanho++;
-    Ordenar();
 }
 
 NoArvore* Lista::Remover()

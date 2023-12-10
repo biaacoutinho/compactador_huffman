@@ -44,6 +44,7 @@ static void CriarFilaDePrioridade()
             }
         }
         arq.close();
+        filaPrioridade->Ordenar();
     }
 }
 
@@ -81,7 +82,7 @@ static void EscreverArvore(NoArvore* no, ofstream& arq, char *byte, int *bits)
 
         *byte = 0b0; //zera o byteAtual denovo (00000000)
 
-        int mascara = ~(0b01111111 << bitsNGravados); //cria uma mascara para conseguir gravar
+        int mascara = ~(0b11111111 << bitsNGravados); //cria uma mascara para conseguir gravar
         //o numero certo de bits do codigo
         *byte = a & mascara; //grava os bits restantes
 
@@ -90,6 +91,7 @@ static void EscreverArvore(NoArvore* no, ofstream& arq, char *byte, int *bits)
         if (*bits == 8)
         {
             arq.write(byte, 1);
+            *bits = 0;
         }
 
         return;
@@ -104,6 +106,7 @@ static void EscreverArvore(NoArvore* no, ofstream& arq, char *byte, int *bits)
     if (*bits == 8)
     {
         arq.write(byte, 1);
+        *bits = 0;
     }
 
     EscreverArvore(no->getEsq(), arq, byte, bits);
@@ -127,9 +130,10 @@ static NoArvore* LerArvore(NoArvore* no, ifstream& arq, char* byte, int* bitsLid
 	if (bit) //se o bit lido for 1
 	{
 		char c = 0;
-		c = (*byte << *bitsLidos) | 0; //primeira parte do char
+		c = (*byte << *bitsLidos); //primeira parte do char
 		arq.get(*byte); //inicia um novo byte
-		c |= (*byte >> (8 - *bitsLidos));
+        unsigned __int8 b = *byte;
+		c |= (b >> (8 - *bitsLidos));
 		no = new NoArvore(c, 0);
 		return no;
 	}
@@ -164,8 +168,6 @@ static void Compactar()
         arvore = CriarArvore();
         arvore->Codificar(arvore->getRaiz(), 0, 0);
 
-        MostrarArvore(arvore->getRaiz());
-
         ofstream arq("C:\\Users\\Hugo\\Downloads\\compactador_huffman-main/compactado.dat", ios::binary);
         //ofstream arq("D:\\ARMAG/compactado.dat", ios::binary);
         ifstream arqLeitura(nomeArquivo, ios::binary);
@@ -186,6 +188,7 @@ static void Compactar()
                 if (bitsEscritos == 8)
                 {
                     arq.write(&byte, 1);
+                    bitsEscritos = 0;
                 }
             }
             else
@@ -225,6 +228,7 @@ static void Compactar()
         teste.get(c);
         novaArvore = new Arvore();
         novaArvore->setRaiz(LerArvore(novaArvore->getRaiz(), teste, &c, new int(0)));
+        teste.close();
 
         MostrarArvore(arvore->getRaiz());
         cout << "Nova Arvore" << endl;
