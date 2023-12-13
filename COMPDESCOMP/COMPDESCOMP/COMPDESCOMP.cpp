@@ -132,9 +132,10 @@ static NoArvore* LerArvore(NoArvore* no, ifstream& arq, char* byte, int* bitsLid
 		char c = 0;
 		c = (*byte << *bitsLidos); //primeira parte do char
 		arq.get(*byte); //inicia um novo byte
-        unsigned __int8 b = *byte;
+        uint8_t b = *byte;
 		c |= (b >> (8 - *bitsLidos));
 		no = new NoArvore(c, 0);
+        cout << c;
 		return no;
 	}
 	else //se o bit lido for 0
@@ -168,7 +169,7 @@ static void Compactar()
         arvore = CriarArvore();
         arvore->Codificar(arvore->getRaiz(), 0, 0);
 
-        ofstream arq("C:\\Users\\Hugo\\Downloads\\compactador_huffman-main/compactado.dat", ios::binary);
+        ofstream arq("B:\\ESCOLA\\MALIGNO/compactado.dat", ios::binary);
         //ofstream arq("D:\\ARMAG/compactado.dat", ios::binary);
         ifstream arqLeitura(nomeArquivo, ios::binary);
 
@@ -214,15 +215,22 @@ static void Compactar()
 
         char bitsNaoUsados = 8 - bitsEscritos;
 
+        byte <<= bitsNaoUsados;
+        arq.write(&byte, 1);
+
         arq.seekp(0, ios::beg); //ajusta o ponteiro do arquivo pra primeira posicao
         arq.write(&bitsNaoUsados, 1); //escreve o numero de bits a ser desconsiderado
 
-        EscreverArvore(arvore->getRaiz(), arq, new char(), new int(0)); //Escrever a arvore no arquivo
+        char* p = new char();
+        int* b = new int(0);
+        EscreverArvore(arvore->getRaiz(), arq, p, b); //Escrever a arvore no arquivo
+        *p <<= (8 - *b);
+        arq.write(p, 1);
 
         arqLeitura.close();
         arq.close();
 
-        ifstream teste("C:\\Users\\Hugo\\Downloads\\compactador_huffman-main/compactado.dat");
+        ifstream teste("B:\\ESCOLA\\MALIGNO/compactado.dat");
         char c;
         teste.get(c);
         teste.get(c);
@@ -245,8 +253,10 @@ static void Compactar()
 
 static void Descompactar()
 {
-    cout << "Não tá pronto kkkkkk! somente chore com seu arquivo compactado que vc nao vai poder descompactar" << endl;
-    system("pause");
+    cout << "Digite o caminho do arquivo que deseja descompactar: ";
+    cin >> nomeArquivo;
+
+
 }
 
 int main()
