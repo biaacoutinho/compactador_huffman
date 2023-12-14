@@ -57,6 +57,23 @@ void Lista::Inserir(NoLista* dado)
     }
 }
 
+void Lista::InserirNoFim(NoLista* dado)
+{
+    if (primeiro != nullptr)
+    {
+        primeiro = dado;
+        ultimo = dado;
+    }
+    else
+    {
+        ultimo->setProx(dado);
+        dado->setAnt(ultimo);
+        ultimo = dado;
+        atual = ultimo;
+    }
+    tamanho++;
+}
+
 Lista::Lista(Lista* copia)
 {
     copia->setAtual(copia->getPrimeiro());

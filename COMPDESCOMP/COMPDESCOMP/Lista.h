@@ -14,6 +14,7 @@ class Lista
 		Lista(Lista*);
 		int Tamanho();
 		void Inserir(NoLista*);
+		void InserirNoFim(NoLista*);
 		NoArvore* Remover();
 		void Ordenar();
 		NoLista* getAtual();
