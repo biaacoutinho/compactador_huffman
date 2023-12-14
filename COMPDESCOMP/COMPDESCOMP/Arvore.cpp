@@ -78,6 +78,25 @@ unsigned int Arvore::BuscarCodigo(NoArvore* no, char procurado)
     return codigoDir;
 }
 
+char Arvore::BuscarCaracter(NoArvore* no, int procurado)
+{
+    if (no == nullptr)
+        return INT16_MAX;
+
+    if (procurado == no->getCodigo())
+    {
+        setAtual(no);
+        return no->getCaracter();
+    }
+
+    char codigoEsq = BuscarCaracter(no->getEsq(), procurado);
+    if (codigoEsq != INT16_MAX)
+        return codigoEsq;
+
+    char codigoDir = BuscarCaracter(no->getDir(), procurado);
+    return codigoDir;
+}
+
 NoArvore* Arvore::getRaiz()
 {
     return this->raiz;

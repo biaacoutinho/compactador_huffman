@@ -1,1 +1,5 @@
-﻿  CompactadorHuffmann.vcxproj -> B:\ESCOLA\MALIGNO\compactador_huffman\CompactadorHuffmann\x64\Debug\CompactadorHuffmann.exe
+﻿  COMPDESCOMP.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\filesystem(12): warning STL4038: The contents of <filesystem> are available only with C++17 or later.
+B:\ESCOLA\MALIGNO\compactador_huffman\COMPDESCOMP\COMPDESCOMP\COMPDESCOMP.cpp(97,23): warning C4018: '<': incompatibilidade de signed/unsigned
+B:\ESCOLA\MALIGNO\compactador_huffman\COMPDESCOMP\COMPDESCOMP\COMPDESCOMP.cpp(222,20): warning C4267: 'inicializando': conversão de 'size_t' para 'int', possível perda de dados
+  CompactadorHuffmann.vcxproj -> B:\ESCOLA\MALIGNO\compactador_huffman\CompactadorHuffmann\x64\Debug\CompactadorHuffmann.exe

@@ -57,6 +57,16 @@ void Lista::Inserir(NoLista* dado)
     }
 }
 
+Lista::Lista(Lista* copia)
+{
+    copia->setAtual(copia->getPrimeiro());
+    while (copia->getAtual() != nullptr)
+    {
+        this->Inserir(new NoLista(copia->atual->getDado()));
+        copia->setAtual(copia->atual->getProx());
+    }
+}
+
 NoArvore* Lista::Remover()
 {
     if (primeiro != nullptr)

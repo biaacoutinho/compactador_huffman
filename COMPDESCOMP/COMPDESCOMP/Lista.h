@@ -11,6 +11,7 @@ class Lista
 
 	public:
 		Lista();
+		Lista(Lista*);
 		int Tamanho();
 		void Inserir(NoLista*);
 		NoArvore* Remover();

@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string.h>
 #include <filesystem>
+#include <bitset>
 #include "Arvore.h"
 #include "Lista.h"
 
@@ -11,8 +12,9 @@ using namespace std;
 Arvore* arvore;
 Arvore* novaArvore;
 Lista* filaPrioridade;
+Lista* novaFilaPrioridade;
 char abriuArquivo = 0;
-char* nomeArquivo = new char[200];
+string nomeArquivo;
 
 static void CriarFilaDePrioridade()
 {
@@ -60,6 +62,45 @@ static Arvore* CriarArvore()
     }
 
     return new Arvore(filaPrioridade->Remover());
+}
+
+static void EscreverFila(ofstream& arq)
+{
+    if (!arq.is_open())
+    {
+        return;
+    }
+
+    int tamanho = novaFilaPrioridade->Tamanho();
+    arq.write(reinterpret_cast<const char*>(&tamanho), 4);
+
+    auto noAtual = novaFilaPrioridade->getPrimeiro();
+    while (noAtual != nullptr)
+    {
+        auto dado = noAtual->getDado();
+        char c = dado->getCaracter();
+        arq.write(&c, 1);
+        unsigned int freq = dado->getFrequencia();
+        arq.write(reinterpret_cast<const char*>(&freq), sizeof(unsigned int));
+
+        noAtual = noAtual->getProx();
+    }
+}
+
+static void LerFila(ifstream& arq, unsigned int tamFila)
+{
+    if (filaPrioridade)
+        delete filaPrioridade;
+
+    filaPrioridade = new Lista();
+
+    for (int i = 0; i < tamFila; i++)
+    {
+        char c = arq.get();
+        unsigned int freq;
+        arq.read(reinterpret_cast<char*>(&freq), sizeof(unsigned int));
+        filaPrioridade->Inserir(new NoLista(new NoArvore(c, freq)));
+    }
 }
 
 static void EscreverArvore(NoArvore* no, ofstream& arq, char *byte, int *bits)
@@ -163,6 +204,7 @@ static void Compactar()
     cin >> nomeArquivo;
 
     CriarFilaDePrioridade();
+    novaFilaPrioridade = new Lista(filaPrioridade);
 
     if (abriuArquivo) 
     {
@@ -172,6 +214,16 @@ static void Compactar()
         ofstream arq("B:\\ESCOLA\\MALIGNO/compactado.dat", ios::binary);
         //ofstream arq("D:\\ARMAG/compactado.dat", ios::binary);
         ifstream arqLeitura(nomeArquivo, ios::binary);
+
+        size_t posPonto = nomeArquivo.find_last_of('.');
+        string ext = nomeArquivo.substr(posPonto + 1);
+        char c = 0;
+        arq.write(&c, 1); // onde serão escritos os bitsAIgnorar
+        int extTam = ext.length();
+        arq.write(reinterpret_cast<const char*>(&extTam), sizeof(extTam));
+        arq.write(ext.c_str(), ext.length());
+
+        EscreverFila(arq);
 
         char byte = 0;
         int bitsEscritos = 0;
@@ -221,26 +273,8 @@ static void Compactar()
         arq.seekp(0, ios::beg); //ajusta o ponteiro do arquivo pra primeira posicao
         arq.write(&bitsNaoUsados, 1); //escreve o numero de bits a ser desconsiderado
 
-        char* p = new char();
-        int* b = new int(0);
-        EscreverArvore(arvore->getRaiz(), arq, p, b); //Escrever a arvore no arquivo
-        *p <<= (8 - *b);
-        arq.write(p, 1);
-
         arqLeitura.close();
         arq.close();
-
-        ifstream teste("B:\\ESCOLA\\MALIGNO/compactado.dat");
-        char c;
-        teste.get(c);
-        teste.get(c);
-        novaArvore = new Arvore();
-        novaArvore->setRaiz(LerArvore(novaArvore->getRaiz(), teste, &c, new int(0)));
-        teste.close();
-
-        MostrarArvore(arvore->getRaiz());
-        cout << "Nova Arvore" << endl;
-        MostrarArvore(novaArvore->getRaiz());
 
         system("pause");
     }
@@ -256,7 +290,57 @@ static void Descompactar()
     cout << "Digite o caminho do arquivo que deseja descompactar: ";
     cin >> nomeArquivo;
 
+    ifstream arq(nomeArquivo);
+    unsigned int tamFila;
+    char bitsAIgnorar;
+    int tamExt;
+    arq.get(bitsAIgnorar);
+    arq.read(reinterpret_cast<char*>(&tamExt), sizeof(int));
 
+    char* buffer = new char[tamExt + 1]; 
+    arq.read(buffer, tamExt);
+    buffer[tamExt] = '\0';
+    string ext(buffer);
+    delete[] buffer;
+
+    arq.read(reinterpret_cast<char*>(&tamFila), sizeof(tamFila));
+    
+    LerFila(arq, tamFila);
+    Arvore* novaArvore = CriarArvore();
+
+    ofstream arqEscrita("B:\\ESCOLA\\MALIGNO/descompactado." + ext, ios::binary);
+
+    string bitsLidos;
+    for (char b; arq.get(b);)
+        bitsLidos += bitset<8>(b).to_string();
+    bitsLidos = bitsLidos.substr(0, bitsLidos.size() - bitsAIgnorar);
+
+    NoArvore* noAtual = novaArvore->getRaiz();
+    string texto;
+    for (size_t i = 0; bitsLidos[i] != '\0'; i++)
+    {
+        if (bitsLidos[i] == '0')
+        {
+            if (noAtual->getEsq())
+                noAtual = noAtual->getEsq();
+        }
+        else if (bitsLidos[i] == '1')
+        {
+            if (noAtual->getDir())
+                noAtual = noAtual->getDir();
+        }
+
+        if (!noAtual->getEsq() && !noAtual->getDir())
+        {
+            texto += noAtual->getCaracter();
+            noAtual = novaArvore->getRaiz();
+        }
+    }
+
+    arqEscrita << texto;
+
+    arq.close();
+    arqEscrita.close();
 }
 
 int main()
