@@ -256,9 +256,9 @@ static void Compactar()
         arvore = CriarArvore();
         arvore->Codificar(arvore->getRaiz(), 0, 0);
 
-        ofstream arq("C:\\Users\\u22121\\Documents\\GitHub\\compactador_huffman/compactado.dat", ios::binary);
+        ofstream arq("C:\\Users\\u22121\\Documents\\GitHub\\compactador_huffman/compactado.txt", ios::out | ios::binary);
         //ofstream arq("D:\\ARMAG/compactado.dat", ios::binary);
-        ifstream arqLeitura(nomeArquivo, ios::binary);
+        ifstream arqLeitura(nomeArquivo, ios::in | ios::binary);
 
         size_t posPonto = nomeArquivo.find_last_of('.');
         string ext = nomeArquivo.substr(posPonto + 1);
@@ -276,27 +276,32 @@ static void Compactar()
         if (arvore->getRaiz())
             gerarCodigosHuffman(arvore->getRaiz(), code, codes);
 
-        char bitsLidos[10000000];
+        char* bitsLidos = new char[10000000];
 
+        int charescritos = 0;
         char byte = 0;
         int bitsEscritos = 0;
         for (char c; arqLeitura.get(c); )
         {
-            string codigo = codes.at(c);
+            const char* codigo = codes.at(c).c_str();
             for (int j = 0; codigo[j] != '\0'; j++)
             {
                 bitsLidos[bitsEscritos] = codigo[j];
                 bitsEscritos++;
             }
+            charescritos++;
         }
+        arq.write(reinterpret_cast<const char*>(&charescritos), sizeof(int));
+        arq.write(reinterpret_cast<const char*>(&bitsEscritos), sizeof(int));
 
         char current_byte = 0;
         int  bit_count = 0;
 
-        for (char bit : bitsLidos) {
-            EscreverBitNoArquivo(arq, bit, current_byte, bit_count);
+        for (int i = 0; i < bitsEscritos; i++) {
+            EscreverBitNoArquivo(arq, bitsLidos[i], current_byte, bit_count);
         }
 
+        delete[] bitsLidos;
 
         // If there are remaining bits in the buffer, write them to the file:
         if (bit_count > 0) {
@@ -343,24 +348,37 @@ static void Descompactar()
     arq.read(reinterpret_cast<char*>(&tamFila), sizeof(unsigned int));
     
     LerFila(arq, tamFila);
+    int qtsChar;
+    arq.read(reinterpret_cast<char*>(&qtsChar), sizeof(int));
+    int qtsBits;
+    arq.read(reinterpret_cast<char*>(&qtsBits), sizeof(int));
     Arvore* novaArvore = CriarArvore();
 
-    ofstream arqEscrita("C:\\Users\\u22121\\Documents\\GitHub\\compactador_huffman/descompactado." + ext, ios::binary);
+    ofstream arqEscrita("C:\\Users\\u22121\\Documents\\GitHub\\compactador_huffman/descompactado." + ext, ios::binary | ios::out);
 
-    int i = 0;
-    string bitsLidos;
-    for (char b; arq.get(b);)
-    {
-        i++;
-        bitsLidos += bitset<8>(b).to_string();
+    int bitsEscritos = 0;
+    char* bitsLidos = new char[10000000];
+    int k = 0;
+    char b;
+    while (k < qtsBits/8)
+    { 
+        arq.read(reinterpret_cast<char*>(&b), sizeof(b));
+        string codigo = bitset<8>(b).to_string();
+        for (int j = 0; j < 8; j++)
+        {
+            bitsLidos[bitsEscritos] = codigo[j];
+            bitsEscritos++;
+        }
+        k++;
     }
-    bitsLidos = bitsLidos.substr(0, bitsLidos.size() - bitsAIgnorar);
+
     if (arq.eof())
         cout << "a";
 
     NoArvore* noAtual = novaArvore->getRaiz();
-    string texto;
-    for (size_t i = 0; bitsLidos[i] != '\0'; i++)
+    char* texto = new char[qtsChar];
+    int sizeTexto = 0;
+    for (size_t i = 0; i < bitsEscritos - bitsAIgnorar; i++)
     {
         if (bitsLidos[i] == '0')
         {
@@ -375,12 +393,16 @@ static void Descompactar()
 
         if (!noAtual->getEsq() && !noAtual->getDir())
         {
-            texto += noAtual->getCaracter();
+            texto[sizeTexto] = noAtual->getCaracter();
+            sizeTexto++;
             noAtual = novaArvore->getRaiz();
         }
     }
 
     arqEscrita << texto;
+
+    delete[] bitsLidos;
+    delete[] texto;
 
     arq.close();
     arqEscrita.close();
