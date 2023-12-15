@@ -1,5 +1,12 @@
-﻿  COMPDESCOMP.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.34.31933\include\filesystem(13): warning STL4038: The contents of <filesystem> are available only with C++17 or later.
-C:\Users\u22121\Documents\GitHub\compactador_huffman\COMPDESCOMP\COMPDESCOMP\COMPDESCOMP.cpp(98,23): warning C4018: '<': incompatibilidade de signed/unsigned
-C:\Users\u22121\Documents\GitHub\compactador_huffman\COMPDESCOMP\COMPDESCOMP\COMPDESCOMP.cpp(267,34): warning C4267: 'inicializando': conversão de 'size_t' para 'int', possível perda de dados
-  CompactadorHuffmann.vcxproj -> C:\Users\u22121\Documents\GitHub\compactador_huffman\CompactadorHuffmann\x64\Debug\CompactadorHuffmann.exe
+﻿  Arvore.cpp
+B:\ESCOLA\MALIGNO\compactador_huffman\COMPDESCOMP\COMPDESCOMP\Arvore.cpp(84,16): warning C4305: 'return': truncamento de 'short' para 'char'
+B:\ESCOLA\MALIGNO\compactador_huffman\COMPDESCOMP\COMPDESCOMP\Arvore.cpp(84,16): warning C4309: 'return': truncamento de valor constante
+  COMPDESCOMP.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\filesystem(12): warning STL4038: The contents of <filesystem> are available only with C++17 or later.
+B:\ESCOLA\MALIGNO\compactador_huffman\COMPDESCOMP\COMPDESCOMP\COMPDESCOMP.cpp(98,23): warning C4018: '<': incompatibilidade de signed/unsigned
+B:\ESCOLA\MALIGNO\compactador_huffman\COMPDESCOMP\COMPDESCOMP\COMPDESCOMP.cpp(267,20): warning C4267: 'inicializando': conversão de 'size_t' para 'int', possível perda de dados
+  Lista.cpp
+  NoArvore.cpp
+  NoLista.cpp
+  Gerando Código...
+  CompactadorHuffmann.vcxproj -> B:\ESCOLA\MALIGNO\compactador_huffman\CompactadorHuffmann\x64\Debug\CompactadorHuffmann.exe
